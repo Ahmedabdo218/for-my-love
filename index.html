@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="رسالة حب خاصة ومظروف تفاعلي رومانسي مع موسيقى وأجواء ساحرة">
+    <title>رسالة حب خاصة جداً 💌</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alexandria:wght@300;400;600;700;800&family=Amiri:ital,wght@0,400;0,700;1,400&family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- HTML5 Canvas for Animated Hearts & Floating Petals -->
+    <canvas id="particleCanvas"></canvas>
+
+    <!-- Hidden Audio Player Engine -->
+    <audio id="bgAudio" loop preload="auto">
+        <source src="https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-piano-112199.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- ==========================================
+         0. DUAL PASSWORD LOGIN OVERLAY
+         ========================================== -->
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <div class="lock-icon">
+                <i class="fa-solid fa-heart-circle-bolt"></i>
+            </div>
+            <h2>بوابة الحب الخاصة 🔐</h2>
+            <p>من فضلك ادخل كلمة السر للعبور إلى عالمنا الرومانسي:</p>
+            
+            <form id="loginForm" onsubmit="return false;">
+                <div class="login-input-group">
+                    <i class="fa-solid fa-key"></i>
+                    <input type="password" id="passwordInput" placeholder="أدخل كلمة السر هنا..." autocomplete="off" required>
+                </div>
+                <div id="loginError" class="login-error"></div>
+                <button type="submit" id="loginSubmitBtn" class="primary-btn pulse-glow block-btn">
+                    <i class="fa-solid fa-right-to-bracket"></i> دخول إلى عالم الحب
+                </button>
+            </form>
+            <div class="login-hint">
+                <small>❤️ أدخلي كلمة السر الخاصة بكِ للعبور 🔑✨</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         1. ROMANTIC INTRO OVERLAY (3D ENVELOPE)
+         ========================================== -->
+    <div id="introOverlay" class="intro-overlay hidden-by-default">
+        <div class="stars-bg"></div>
+        <div class="envelope-container" id="envelopeContainer">
+            <div class="envelope-wrapper">
+                <div class="envelope" id="envelope">
+                    <div class="front flap"></div>
+                    <div class="front pocket"></div>
+                    <div class="letter" id="previewLetter">
+                        <div class="letter-stamp">❤️</div>
+                        <div class="letter-line"></div>
+                        <div class="letter-line short"></div>
+                    </div>
+                    <div class="seal-btn" id="sealBtn" title="اضغطي لفتح الرسالة والموسيقى">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <span>افتحي قلبي</span>
+                    </div>
+                </div>
+            </div>
+            <div class="intro-text">
+                <h1 class="sparkle-text">إلى أميرتي الوحيدة 👑</h1>
+                <p>هناك رسالة خاصة وموسيقى تنتظركِ بالداخل..</p>
+                <button class="open-action-btn" id="openActionBtn">
+                    <i class="fa-solid fa-envelope-open-text"></i> اضغطي هنا لتفتحي الرسالة
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Luxury Floating Music Player Capsule -->
+    <div class="music-capsule" id="audioBar">
+        <div class="capsule-left">
+            <div class="vinyl-disc" id="discIcon">
+                <i class="fa-solid fa-music"></i>
+            </div>
+            <div class="capsule-meta">
+                <span class="track-title" id="songTitleDisplay">أغنيتنا الخاصة 💖</span>
+                <div class="capsule-sub">
+                    <span id="currentTimeDisplay" class="track-time">00:00</span>
+                    <div class="progress-track" id="progressBarWrapper">
+                        <div class="progress-fill" id="progressBarFill"></div>
+                    </div>
+                    <span id="durationTimeDisplay" class="track-time">00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="capsule-right">
+            <button class="ctrl-btn" id="prevTrackBtn" title="الأغنية السابقة">
+                <i class="fa-solid fa-backward-step"></i>
+            </button>
+            <button class="ctrl-btn main-play-btn" id="playPauseBtn" title="تشغيل / إيقاف">
+                <i class="fa-solid fa-pause" id="playIcon"></i>
+            </button>
+            <button class="ctrl-btn" id="nextTrackBtn" title="الأغنية التالية">
+                <i class="fa-solid fa-forward-step"></i>
+            </button>
+            
+            <div class="volume-bar-box">
+                <button class="ctrl-btn" id="volumeMuteBtn" title="كتم / تفعيل الصوت">
+                    <i class="fa-solid fa-volume-high" id="volumeIcon"></i>
+                </button>
+                <input type="range" id="volumeSlider" class="vol-range" min="0" max="1" step="0.02" value="0.8" title="مستوى الصوت">
+            </div>
+        </div>
+    </div>
+
+    <!-- Top Action Nav -->
+    <div class="top-nav-actions">
+        <div id="userBadge" class="user-badge">
+            <!-- Dynamic Badge by JS -->
+        </div>
+        <button class="nav-icon-btn admin-only-btn" id="adminModalBtn" title="لوحة تحكم الأدمن">
+            <i class="fa-solid fa-user-gear"></i>
+            <span>لوحة تحكم الأدمن</span>
+        </button>
+        <button class="nav-icon-btn heart-hug-btn" id="sendHugBtn" title="إرسال عناق وقبلات">
+            <i class="fa-solid fa-heart"></i>
+            <span>أرسل حب ✨</span>
+        </button>
+        <button class="nav-icon-btn logout-btn" id="logoutBtn" title="تسجيل الخروج">
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+    </div>
+
+    <!-- Main Romantic Content -->
+    <main class="main-content" id="mainContent">
+
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="romantic-badge">
+                <i class="fa-solid fa-sparkles"></i> رسالة حب أبدية <i class="fa-solid fa-sparkles"></i>
+            </div>
+            <h1 class="hero-title">إلى حبيبتي والغالية على قلبي <span id="partnerNameDisplay">حبيبتي وروحي</span> ❤️</h1>
+            <p class="hero-subtitle">كل ثانية معكِ هي حكاية عشق لا تنتهي..</p>
+            
+            <!-- Live Love Counter Widget (2 Years Baseline) -->
+            <div class="love-counter-card">
+                <h3><i class="fa-solid fa-clock-rotate-left"></i> معاً في رحلة الحب منذ:</h3>
+                <div class="timer-grid">
+                    <div class="timer-box">
+                        <span id="yearsVal">2</span>
+                        <label>سنوات</label>
+                    </div>
+                    <div class="timer-box">
+                        <span id="daysVal">0</span>
+                        <label>أيام</label>
+                    </div>
+                    <div class="timer-box">
+                        <span id="hoursVal">00</span>
+                        <label>ساعات</label>
+                    </div>
+                    <div class="timer-box">
+                        <span id="minutesVal">00</span>
+                        <label>دقائق</label>
+                    </div>
+                    <div class="timer-box seconds-box">
+                        <span id="secondsVal">00</span>
+                        <label>ثواني</label>
+                    </div>
+                </div>
+                <div class="counter-footer">
+                    <i class="fa-solid fa-infinity"></i> وسنظل معاً للأبد إن شاء الله
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Love Letter Section -->
+        <section class="letter-section">
+            <div class="letter-paper">
+                <div class="paper-header">
+                    <div class="rose-corner top-left">🌹</div>
+                    <div class="rose-corner top-right">🌹</div>
+                    <h2 class="letter-heading"><i class="fa-solid fa-feather"></i> رسالتي إليكِ من القلب</h2>
+                    <div class="letter-date" id="letterDateDisplay">اليوم وكل يوم ❤️</div>
+                </div>
+                
+                <div class="paper-body">
+                    <p class="typing-text" id="typingText">
+                        <!-- Dynamic typing text generated by JS -->
+                    </p>
+                </div>
+
+                <div class="paper-footer">
+                    <div class="signature">
+                        <span>مع كل حبي وعشقي،</span>
+                        <h4 id="yourNameDisplay">حبيبكِ أحمد ✍️</h4>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             REPLY SECTION: SHE WRITES BACK TO AHMED
+             ========================================== -->
+        <section class="reply-section">
+            <div class="reply-card">
+                <div class="reply-header">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <h2>اكتبي لحبيبكِ أحمد كلمة من قلبكِ ✍️❤️</h2>
+                    <p>رسالتكِ ستصل لحبيبكِ أحمد فوراً وتُحفظ له في الموقع ومتاح إرسالها عبر الواتساب مباشرة!</p>
+                </div>
+                <div class="reply-body">
+                    <textarea id="sheReplyInput" rows="4" placeholder="اكتبي هنا كل ما يشعر به قلبكِ لحبيبكِ أحمد..."></textarea>
+                    <div class="reply-actions">
+                        <button class="primary-btn" id="saveReplyBtn">
+                            <i class="fa-solid fa-heart-circle-check"></i> حفظ الرسالة في الموقع
+                        </button>
+                        <button class="whatsapp-btn" id="sendWhatsappBtn">
+                            <i class="fa-brands fa-whatsapp"></i> إرسال عبر الواتساب لأحمد مباشرة
+                        </button>
+                    </div>
+                    <div id="replyStatus" class="reply-status"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Reasons Why I Love You Interactive Section -->
+        <section class="reasons-section">
+            <h2 class="section-title"><i class="fa-solid fa-heart-circle-bolt"></i> لماذا أحبكِ؟ (اضغطي واكتشفي)</h2>
+            <div class="reasons-grid">
+                <div class="reason-card" tabindex="0">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <h3>ابتسامتكِ الساحرة</h3>
+                            <p>انقري لرؤية السبب ✨</p>
+                        </div>
+                        <div class="card-back">
+                            <p>لأن ابتسامتكِ تضيء أظلم أيامي، وتجعل كل ما هو صعبٌ ممكناً ولطيفاً في لحظة واحدة.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reason-card" tabindex="0">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-face-smile-beam"></i>
+                            <h3>طيبتكِ وحنانكِ</h3>
+                            <p>انقري لرؤية السبب ✨</p>
+                        </div>
+                        <div class="card-back">
+                            <p>لأن في قلبكِ حناناً يملأ العالم دفقاً ودفئاً، وأجد في حضنكِ وطني وأماني الوحيد.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reason-card" tabindex="0">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-eye"></i>
+                            <h3>عيونكِ الجميلة</h3>
+                            <p>انقري لرؤية السبب ✨</p>
+                        </div>
+                        <div class="card-back">
+                            <p>في عينيكِ أرى مستقبلي وكل ما تمنيته، ولا يمكنني التوقف عن التأمل في جمالهما.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reason-card" tabindex="0">
+                    <div class="card-inner">
+                        <div class="card-front">
+                            <i class="fa-solid fa-gem"></i>
+                            <h3>لأنكِ أنتِ</h3>
+                            <p>انقري لرؤية السبب ✨</p>
+                        </div>
+                        <div class="card-back">
+                            <p>لأنكِ نادرة ومميزة بكليتكِ، وببساطتك وروعة تفاصيلكِ التي لا تشبه أحداً في الكون.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Secret Surprise Box -->
+        <section class="surprise-section">
+            <div class="surprise-box">
+                <div class="surprise-icon">
+                    <i class="fa-solid fa-gift"></i>
+                </div>
+                <h3>لديكِ مفاجأة سرية في هذا الصندوق!</h3>
+                <p>اضغطي على الزر أدناه لفتح الهدية السرية 🎁</p>
+                <button class="primary-btn pulse-glow" id="secretModalBtn">
+                    <i class="fa-solid fa-key"></i> افتحي المفاجأة السرية
+                </button>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="romantic-footer">
+            <p>تم صُنع هذا الموقع بـ ❤️ وكل حب العالم لأجلكِ أنتِ فقط من حبيبك أحمد.</p>
+            <div class="footer-hearts">💖 💕 💗 💓 📌</div>
+        </footer>
+
+    </main>
+
+    <!-- ==========================================
+         DEDICATED FULLSCREEN ADMIN AHMED DASHBOARD
+         ========================================== -->
+    <div id="adminDashboardView" class="admin-dashboard-view">
+        <div class="admin-dashboard-container">
+            <div class="admin-dashboard-header">
+                <div class="admin-title">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <h2>لوحة تحكم الأدمن (أحمد) 👑</h2>
+                </div>
+                <button class="nav-icon-btn logout-btn" id="adminLogoutBtn">
+                    <i class="fa-solid fa-right-from-bracket"></i> تسجيل الخروج
+                </button>
+            </div>
+            
+            <div class="admin-dashboard-body">
+                <!-- Tab Controls -->
+                <div class="admin-tabs">
+                    <button class="tab-btn active" id="tabMessagesBtn"><i class="fa-solid fa-envelope-open-text"></i> رسائل حبيبتك لك (<span id="messagesCountBadge">0</span>)</button>
+                    <button class="tab-btn" id="tabSettingsBtn"><i class="fa-solid fa-sliders"></i> إعدادات الموقع</button>
+                </div>
+
+                <!-- Tab 1: Messages Sent By Her -->
+                <div id="tabMessages" class="tab-content active">
+                    <h4><i class="fa-solid fa-comment-heart"></i> الرسائل التي كتبتها لك حبيبتك:</h4>
+                    <div id="receivedMessagesList" class="messages-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+
+                <!-- Tab 2: Site Settings -->
+                <div id="tabSettings" class="tab-content">
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-heart"></i> اسم حبيبتكِ (يظهر في العناوين والرسائل):</label>
+                        <input type="text" id="partnerNameInput" value="حبيبتي وروحي">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-user"></i> اسمك أنت (الأدمن أحمد):</label>
+                        <input type="text" id="yourNameInput" value="أحمد">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-mobile-screen-button"></i> رقم هاتفك للواتساب (مثل 201000000000+):</label>
+                        <input type="text" id="adminPhoneInput" placeholder="أدخل رقم الواتساب لإستلام الرسائل مباشرة">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-music"></i> رابط الأغنية MP3 المباشر:</label>
+                        <input type="text" id="songUrlInput" placeholder="ضع رابط الأغنية المباشر MP3 هنا (مثلاً assets/song.mp3 أو رابط مباشر)">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-calendar-days"></i> تاريخ بداية الحب (افتراضي: منذ سنتين):</label>
+                        <input type="date" id="startDateInput">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fa-solid fa-pen-fancy"></i> نص رسالة الحب الخاصة بك لحبيبتك:</label>
+                        <textarea id="letterTextInput" rows="5"></textarea>
+                    </div>
+                    <div class="admin-save-area">
+                        <button class="primary-btn" id="saveAdminModal"><i class="fa-solid fa-floppy-disk"></i> حفظ التغييرات وتحديث الموقع</button>
+                        <span id="saveStatus" class="save-status"></span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Secret Gift Modal -->
+    <div class="modal-backdrop" id="secretModal">
+        <div class="modal-card secret-card">
+            <div class="modal-header">
+                <h3><i class="fa-solid fa-gift"></i> سر حبنا الخالد 🌹</h3>
+                <button class="close-modal" id="closeSecretModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="big-glowing-heart">💖</div>
+                <h2>أنتِ أجمل هدية من الله في حياتي!</h2>
+                <p id="secretTextDisplay">وعد مني أن أظل بجانبكِ، أحميكِ وأحبكِ وأسعدكِ بكل ما أوتيت من قوة طوال عمري. أنتِ لستِ فقط حبيبتي، بل أنتِ عالمي كله!</p>
+                <div class="voucher-box">
+                    <i class="fa-solid fa-ticket-simple"></i>
+                    <span>كوبون قسيمة حب: "سهرة رومانسية + أي طلب تختارينه يُمضى فوراً!" 🎟️✨</span>
+                </div>
+            </div>
+            <div class="modal-footer justify-center">
+                <button class="primary-btn" id="acceptSecretBtn">أعدكِ بهذا للأبد ❤️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sound & Logic Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>
